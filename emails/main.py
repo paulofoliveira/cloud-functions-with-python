@@ -22,7 +22,7 @@ def get_bearer_token(request):
     return bearer_token  
 
 
-def send_email(request):
+def send_mail(request):
     if request.method != "POST":
         abort(405)  # Retorna Method Not Allowed (HTTP 405) em qualquer verbo chamado além do POST
 
