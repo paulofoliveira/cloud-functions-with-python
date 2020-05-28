@@ -3,11 +3,30 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from flask import abort
 
+def get_bearer_token(request):
+    bearer_token = request.headers.get("Authorization", None)
+    if not bearer_token: # Token não encontrado.
+        abort(401)
+    
+    parts = bearer_token.split()
+
+    if parts[0].lower() != "bearer": # Header sem Bearer no Authorization
+        abort(401)
+    elif len(parts) == 1: # Header sem Token não encontrado
+        abort(401)
+    elif len(parts) > 2: # Header com mais de uma informação além do Token
+        abort(401)
+    
+    bearer_token = parts[1]
+
+    return bearer_token  
+
+
 def send_email(request):
     if request.method != "POST":
-        abort(405)  # Retorna Method Not Allowed (HTTP 405) em qualquer verbo chamado além do POST.
+        abort(405)  # Retorna Method Not Allowed (HTTP 405) em qualquer verbo chamado além do POST
 
-    bearer_token = request.headers.get('Authorization').split()[1] # Recupera token para validação do header
+    bearer_token = get_bearer_token(request) # Recupera token para validação do header
     secret_key = os.environ.get("ACCESS_TOKEN")
 
     # Compara secret_key com bearer_token
