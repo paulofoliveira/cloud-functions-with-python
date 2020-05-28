@@ -4,6 +4,17 @@ from sendgrid.helpers.mail import Mail
 from flask import abort
 
 def send_email(request):
+    if request.method != "POST":
+        abort(405)  # Retorna Method Not Allowed (HTTP 405) em qualquer verbo chamado além do POST.
+
+    bearer_token = request.headers.get('Authorization').split()[1] # Recupera token para validação do header
+    secret_key = os.environ.get("ACCESS_TOKEN")
+
+    # Compara secret_key com bearer_token
+
+    if (secret_key != bearer_token):
+        abort(401) # Retorna HTTP 401 - Unauthorized
+
     request_json = request.get_json(silent=True)
     parameters = ("sender", "receiver", "subject", "message")
 
