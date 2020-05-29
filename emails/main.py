@@ -31,7 +31,7 @@ def send_mail(request):
 
     # Compara secret_key com bearer_token
 
-    if (secret_key != bearer_token):
+    if secret_key != bearer_token:
         abort(401) # Retorna HTTP 401 - Unauthorized
 
     request_json = request.get_json(silent=True)
@@ -41,7 +41,7 @@ def send_mail(request):
 
     if request_json and all(k in request_json for k in parameters):
         sender = request_json["sender"]
-        receiver = request_json[parameters[1]]
+        receiver = request_json["receiver"]
         subject = request_json["subject"]
         message = request_json["message"]
     else:
@@ -54,11 +54,13 @@ def send_mail(request):
         html_content = message)
 
 
-    # Enviar email com try/except (try/catch do C#)
+    # Enviar email com try/except (try/catch do C#) 
 
     try:
         sg = SendGridAPIClient(os.environ.get("SENDGRID_API_KEY"))
+        print(message)
         sg.send(message)  
         return 'OK', 200
-    except Exception as e:        
-        return e, 400
+    except Exception as e:  
+        print(str(e))      
+        return 'OK', 400
