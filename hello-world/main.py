@@ -1,4 +1,17 @@
 def hello_world(request):
+    if request.method == "OPTIONS": # Requisiçao de preflight para atender o CORS
+        headers = {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Max-Age": "3600"
+        }
+        return '', 204, headers # HTTP 204 - No Content
+
+    headers = {
+        "Access-Control-Allow-Origin": "*"
+    }
+
     request_args = request.args
     request_json = request.get_json(silent=True)
 
@@ -12,4 +25,4 @@ def hello_world(request):
         name = "World"
         lastname = ""
 
-    return f"Hello {name} {lastname}!!!"
+    return f"Hello {name} {lastname}!!!", 200, headers
